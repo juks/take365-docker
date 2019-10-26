@@ -37,6 +37,7 @@ services:
       MYSQL_PASSWORD: greeting
     volumes:
       - ./db:/var/lib/mysql
+      - ./sql/:/var/sql
 
   # postgres:
   #     image: postgres:9.6-alpine
