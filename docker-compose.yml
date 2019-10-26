@@ -1,0 +1,54 @@
+version: '2'
+services:
+  nginx:
+    image: nginx
+    environment:
+      - SERVER_PORT=80
+      - SERVER_NAME=take365.vasa.tech
+    command: /bin/sh -c "envsubst '$$SERVER_PORT $$SERVER_NAME' < /etc/nginx/configuration/take365.conf > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+    ports:
+      - 8087:80
+    volumes:
+      - ./app/:/var/www
+      - ./docker/nginx:/etc/nginx/configuration
+    depends_on:
+      - php
+
+  php:
+    build:
+      context: ./docker/php
+    volumes:
+      - ./app/:/var/www
+      - ~/.gitconfig:/root/.gitconfig
+      - ~/.composer/cache:/root/.composer/cache
+      - ~/.ssh/id_rsa:/root/.ssh/id_rsa
+      - ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub
+    working_dir: /var/www
+
+  db:
+    image: mysql
+    command: mysqld --sql-mode="NO_ENGINE_SUBSTITUTION" --default-authentication-plugin=mysql_native_password
+    ports:
+      - 13306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: greeting
+      MYSQL_DATABASE: take365
+      MYSQL_USER: take365
+      MYSQL_PASSWORD: greeting
+    volumes:
+      - ./db:/var/lib/mysql
+
+  # postgres:
+  #     image: postgres:9.6-alpine
+  #     environment:
+  #       - POSTGRES_USER=take365
+  #       - POSTGRES_PASSWORD=greeting
+  #       - POSTGRES_DB=take365
+  #       - PGDATA=/var/lib/postgresql/data/pgdata
+  #     volumes:
+  #       - postgres-volume:/var/lib/postgresql/data/pgdata
+  #     ports:
+  #         - 127.0.0.1:5613:5432
+# volumes:
+#   postgres-volume:
+#     external: true
