@@ -9,7 +9,7 @@ fi
 if [ ! -f "sql/take365.sql" ] 
 then
 	echo "+ untar take365 sql"
-	cd sql && tar -xzvf take365.sql.tar.gz
+	cd sql && tar -xzvf take365.sql.tar.gz && cd ..
 else
 	echo "- sql file already decompressed, skipping..."
 fi
